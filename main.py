@@ -1,56 +1,33 @@
-import string
-from collections import Counter
+import string #string kütüphanesi metin analizi için çeşitli araçlar sağlar. Biz kodumuzda noktalama işaretlerini kaldırmak için kullandık
+from collections import Counter #Python'ın collections kütüphanesinde bulunan Counter sınıfı verileri sayma işlemlerini kolaylaştırır
 
-class MetinAnaliz:
+
+class Metin:
     def __init__(self, dosya_yolu):
-        self.dosya_yolu = dosya_yolu
-        self.metin = self._dosyadan_metin_oku()
+        self.dosya_yolu = dosya_yolu # Dosya yolunu saklar
+        self.icerik = self.dosya_okuma() # Dosya içeriğini okur
+        self.kelimeler = self.metin_isleme() # Metni işler ve kelimelere ayırır
 
-    def _dosyadan_metin_oku(self):
-        try:
-            with open(self.dosya_yolu, 'r', encoding='utf-8') as dosya:
-                return dosya.read()
-        except FileNotFoundError:
-            print("Hata: Belirtilen dosya bulunamadı.")
-            return ''
+    def dosya_okuma(self): # Dosya okur
+        with open(self.dosya_yolu, 'r', encoding='utf-8') as file:
+            return file.read()
 
-    def noktalama_isaretlerini_kaldir(self):
-        self.metin = self.metin.translate(str.maketrans('', '', string.punctuation))
-
-    def kelimelere_ayir(self):
-        kelimeler = self.metin.lower().split()
+    def metin_isleme(self):
+        temiz_icerik = self.icerik.translate(str.maketrans('', '', string.punctuation)) # Noktalama işaretlerini kaldırır
+        kelimeler = temiz_icerik.lower().split() # Metni küçük harfe dönüştürür ve kelimelere ayırır
         return kelimeler
 
-    def istatistikleri_al(self):
-        self.noktalama_isaretlerini_kaldir()
-        kelimeler = self.kelimelere_ayir()
+    def harf_sayisi(self):# Toplam harf sayısını hesaplar
+        return sum(len(kelime) for kelime in self.kelimeler)
 
-        # Harf sayısı
-        harf_sayisi = sum(c.isalpha() for c in self.metin)
+    def kelime_sayisi(self): #Toplam kelime sayısını hesaplar
+        return len(self.kelimeler)
 
-        # Kelime sayısı
-        kelime_sayisi = len(kelimeler)
+    def etkisiz_kelimeler(self, etkisiz_kelimeler_listesi): # Etkisiz kelimeleri listeden çıkarır ve kalan kelimeleri döndürür
+        return [kelime for kelime in self.kelimeler if kelime not in etkisiz_kelimeler_listesi]
 
-        # Etkisiz kelime (dur-stop words) sayısı
-        etkisiz_kelimeler = {'ve', 'veya', 'ile', 'gibi', 'da', 'için', 'ise', 'ki', 'kadar'}
-        etkisiz_kelime_sayisi = sum(1 for kelime in kelimeler if kelime in etkisiz_kelimeler)
-
-        # Kelime frekanslarını bulma (etkisiz kelimeleri çıkartarak)
-        kelime_siklikleri = Counter(word for word in kelimeler if word not in etkisiz_kelimeler)
-
-        return harf_sayisi, kelime_sayisi, etkisiz_kelime_sayisi, kelime_siklikleri
-
-# Kullanım örneği
-dosya_yolu = 'metin_belgesi.txt'
-metin_analizci = MetinAnaliz(dosya_yolu)
-harf_sayisi, kelime_sayisi, etkisiz_kelime_sayisi, kelime_siklikleri = metin_analizci.istatistikleri_al()
-
-print(f"Harf Sayısı: {harf_sayisi}")
-print(f"Kelime Sayısı: {kelime_sayisi}")
-print(f"Etkisiz Kelime Sayısı: {etkisiz_kelime_sayisi}")
-print("En Çok Geçen Kelimeler ve Frekansları:")
-for kelime, frekans in kelime_siklikleri.most_common(5):
-    print(f"- {kelime}: {frekans}")
-print("En Az Geçen Kelimeler ve Frekansları:")
-for kelime, frekans in kelime_siklikleri.most_common()[:-6:-1]:
-    print(f"- {kelime}: {frekans}")
+    def kelime_istatistikleri(self):
+        kelime_sayaci = Counter(self.kelimeler) #self kelimeler listesindeki her bir kelimenin kaç kez geçtiğini sayar
+        en_cok_gecen = kelime_sayaci.most_common(5) # En yaygın kullanılan 5 kelimeyi bulur
+        en_az_gecen = kelime_sayaci.most_common()[:-6:-1] # En az kullanılan 5 kelimeyi bulur
+        return en_cok_gecen, en_az_gecen
