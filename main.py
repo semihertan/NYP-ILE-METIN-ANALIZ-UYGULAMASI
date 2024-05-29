@@ -4,8 +4,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 import sqlite3
 
-
-# Button Action
+# Arayüze dosya ekleme işlemi
 def load_file1():
     file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
     if file_path:
@@ -22,7 +21,7 @@ def load_file2():
             textPlace2.delete(1.0, tk.END)
             textPlace2.insert(tk.END, content)
 
-
+# Arama filtreleme ve işaretleme işlemi
 def highlight_text(text_widget, keyword):
     text_widget.tag_remove("highlight", 1.0, tk.END)
     if keyword:
@@ -41,7 +40,7 @@ def search_and_highlight():
     highlight_text(textPlace1, keyword)
     highlight_text(textPlace2, keyword)
 
-
+# Benzerlik analizi işlemi
 def compare_texts():
     text1_content = textPlace1.get(1.0, tk.END).strip()
     text2_content = textPlace2.get(1.0, tk.END).strip()
@@ -52,6 +51,7 @@ def compare_texts():
     similarity_ratio = Similarity().percentage(text1_content, text2_content)
     result_label.config(text=f"Benzerlik Yüzdesi: %{similarity_ratio}")
 
+# İstatistikleri gösterme işlemi
 def show_stats1():
     text1_content = textPlace1.get(1.0, tk.END).strip()
     if not text1_content:
@@ -77,6 +77,7 @@ def show_stats2():
     maxWord2.config(text=f"En Çok Geçen Kelimeler: {TextData(text2_content).get_maxWord()}")
     minWord2.config(text=f"En Az Geçen Kelimeler: {TextData(text2_content).get_minWord()}")
 
+# Veri tabanına yükleme işlemi
 def upload_db():
     text1_content = textPlace1.get(1.0, tk.END).strip()
     text2_content = textPlace2.get(1.0, tk.END).strip()
@@ -113,6 +114,7 @@ def upload_db():
 
     messagebox.showinfo("", "Başarıyla Yüklendi.")
 
+# Veri tabanını temizleme işlemi
 def clear_db():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -123,6 +125,7 @@ def clear_db():
 
     messagebox.showinfo("", "Başarıyla Temizlendi.")
 
+# Veri tabanından veriyi getirme işlemi
 def fetch_db():
     with sqlite3.connect("database.db") as conn:
         cursor = conn.cursor()
@@ -156,6 +159,7 @@ def fetch_db():
             maxWord3.config(text="")
             minWord3.config(text="")
 
+# Veri tabanına bağlanma
 with sqlite3.connect("database.db") as conn:
 
     cursor = conn.cursor()
@@ -174,29 +178,29 @@ with sqlite3.connect("database.db") as conn:
     conn.commit()
 
 
-# Window
+# Ana Pencere
 window = tk.Tk()
 window.title("NLP ile Metin Analizi")
 window.minsize(width=1300, height=700)
 
 
-# Label
+# 1. Metnin Etiketi
 label = tk.Label(text="Default")
 label.config(text="1. Metin")
 label.grid(column=0, row=0)
 
-# Text
+# 1. Metin Kutusu
 textPlace1 = tk.Text(height=10, width=30, font="Arial")
 textPlace1.focus()
 textPlace1.insert(tk.END, "")
 print(textPlace1.get("1.0", tk.END))
 textPlace1.grid(column=0, row=1, padx=20)
 
-# Load
+# 1. Metnin Yükleme Butonu
 load_button = tk.Button(window, text="Dosya Yükle", command=load_file1)
 load_button.grid(column=0, row=2)
 
-# Search
+# Arama/Filtreleme Butonu
 search_label = tk.Label(window, text="Kelime Arama")
 search_label.grid(row=2, column=1)
 search_entry = tk.Entry(window)
@@ -205,22 +209,22 @@ search_button = tk.Button(window, text="Ara ve Vurgula", command=search_and_high
 search_button.grid(row=4, column=1)
 
 
-# Label2
+# 2. Metnin Etiketi
 label = tk.Label(text="Default")
 label.config(text="2. Metin")
 label.grid(column=2, row=0)
 
-# Text
+# 2. Metin Kutusu
 textPlace2 = tk.Text(height=10, width=30, font="Arial")
 textPlace2.insert(tk.END, "")
 print(textPlace2.get("1.0", tk.END))
 textPlace2.grid(column=2, row=1,padx=20)
 
-# Load
+# 2. Metnin Yükleme Butonu
 load_button = tk.Button(window, text="Dosya Yükle", command=load_file2)
 load_button.grid(column=2, row=2)
 
-# Stats
+# 1. Metnin İstatistik Etiketleri
 stats_button = tk.Button(window, text="İstatistikleri Göster", command=show_stats1)
 stats_button.grid(row=3, column=0)
 
@@ -235,7 +239,7 @@ maxWord.grid(row=7, column=0)
 minWord = tk.Label(window, wraplength=200)
 minWord.grid(row=10, column=0)
 
-# Stats 2
+# 2. Metnin İstatistik Etiketleri
 wcount_label2 = tk.Label(window)
 wcount_label2.grid(row=4, column=2)
 lcount_label2 = tk.Label(window)
@@ -251,34 +255,36 @@ stats_button2 = tk.Button(window, text="İstatistikleri Göster", command=show_s
 stats_button2.grid(row=3, column=2)
 
 
-# Similarity
+# Benzerlik Analizi Butonu 
 compare_button = tk.Button(window, text="Benzerliği Karşılaştır", command=compare_texts)
 compare_button.grid(row=5, column=1)
+
+# Benzerlik Analizi Sonuç Etiketi 
 result_label = tk.Label(window, text="Benzerlik Yüzdesi: ")
 result_label.grid(row=6, column=1)
 
-# Send Database
+# Veritabanına Yükleme Butonu
 dbsend = tk.Button(window, text="Veritabanına Yükle", command=upload_db)
 dbsend.grid(row=1, column=1, pady=0)
 
 
-# Fetch Spinbox
+# Spinbox id
 def spinbox_used():
     id = spinbox.get()
     return id
 
-
+# Spinbox butonu
 spinbox = tk.Spinbox(from_=1, to=20, width=5, command=None)
 spinbox.grid(row=0,column=4,pady=20)
 
-# Fetch Text
+# Çekilen Verinin Metin Kutusu
 dataTextPlace = tk.Text(height=10, width=30, font="Arial")
 dataTextPlace.focus()
 dataTextPlace.insert(tk.END, "")
 print(dataTextPlace.get("1.0", tk.END))
 dataTextPlace.grid(column=4, row=1,padx= 20)
 
-# Stats 3
+# Çekilen Verinin İstatistik Etiketleri
 wcount_label3 = tk.Label(window)
 wcount_label3.grid(row=3, column=4)
 lcount_label3 = tk.Label(window)
@@ -290,11 +296,11 @@ maxWord3.grid(row=6, column=4)
 minWord3 = tk.Label(window, wraplength=200)
 minWord3.grid(row=7, column=4)
 
-# Fetch Database
+# Veritabanından Veri Çekme Butonu
 fetch_data = tk.Button(window, text="Veritabanından Çek", command=fetch_db)
 fetch_data.grid(row=2, column=4)
 
-# Clear Database
+# Veritabanını Silme Butonu
 clear_data = tk.Button(window, text="Veritabanını Temizle", command=clear_db)
 clear_data.grid(row=1, column=3)
 

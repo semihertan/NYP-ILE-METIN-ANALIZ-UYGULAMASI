@@ -1,6 +1,7 @@
 import re
 from difflib import SequenceMatcher
 
+# Metni Tokenlarına Ayırma 
 class Token():
 
     def __init__(self, data):
@@ -30,6 +31,7 @@ class Token():
         words = self.removePunct().split()
         return words
 
+# Tokenların İçeriğini Sayma
 class Counter():
 
     def __init__(self, words):
@@ -45,6 +47,7 @@ class Counter():
         words = self.words
         return len(words)
 
+# Token İçeriğini Analiz Etme
 class Analyzer():
     def __init__(self, words):
         self.words = words
@@ -103,7 +106,7 @@ class Analyzer():
 
         return count
 
-
+# Dosya Kontrolü
 class FileHandler():
     def __init__(self, path):
         self.path = path
@@ -126,6 +129,7 @@ class FileHandler():
     def upload(self):
         pass
 
+# Metin Özelliklerini Sınıflandırma
 class TextData:
     def __init__(self,data):
         self.text = data
@@ -157,6 +161,7 @@ class TextData:
     def get_minWord(self):
         return ", ".join(self.minWord)
 
+# Benzerlik Ölçümü
 class Similarity:
     def __init__(self):
         pass
